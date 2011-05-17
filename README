@@ -1,0 +1,16 @@
+Wire IRC Bot
+------------
+
+[:>] = Complete
+[:|] = Pending
+[:<] = Not Started
+
+Todo
+----
+
+[:<] Write a configuration parser
+[:|] Write a module loading API
+[:<] Connect to IRC protocol
+[__] I'll think of more as time passes
+
+  
