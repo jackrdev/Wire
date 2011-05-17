@@ -11,7 +11,9 @@ use feature 'switch';
 
 our %modules;
 our %rm_mod;
-our %commands;
+our %commands = (
+	"!load" => \&load_mod
+);
 our %config;
 
 # Parse & Validate Config
@@ -29,21 +31,44 @@ our $socket = IO::Socket::INET->new(
 
 while(<$socket>) {
 	my(@data) = split (/ /,$_);
-	given(@data[0]) {
+	given($data[0]) {
 		when("PING") {
 			&raw("PONG ".$data[1]);
 		}
 	}
-	given(@data[1]) {
+	given($data[1]) {
 		when("396") {
-			&raw("JOIN ".$config{'autojoin'})
+			&raw("JOIN ".$config{'autojoin'});
+		}
+		when("PRIVMSG") {
+			my($channel) = $data[2];
+			my $cmd = $data[3];
+			$cmd =~ s/://;
+			$cmd =~ s/^\s+//;s/\s+$//;
+			print "\n$cmd\n";
+			$commands{$cmd}($channel, @data[4..$#data]) if exists $commands{$cmd};
 		}
 	}
 	print $_;
 }
+sub load_mod {
+	my($channel, @args) = (shift, @_);
+	$f = $_[0];
+	$f =~ s/^\s+//;
+	$f =~ s/\s+$//;
+	$f = $f . ".pm";
+	&chanMsg($channel, "Loading $f");
+	my $do = do $f;
+	if ($do) {
+		&chanMsg($channel, "YEY. IT LOADED!");
+	}else
+	{
+		&chanMsg($channel, "$!");
+	}
+}
 sub chanMsg {
 	my($chan, @args) = (shift, @_);
-	$_msg = join (' ', @_);
+	$_msg = join (' ', @args);
 	if($socket) {
 		&raw("PRIVMSG $chan :$_msg");
 	}
