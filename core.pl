@@ -6,6 +6,8 @@ package core;
 
 use API;
 use Data::Dumper;
+use IO::Socket;
+use feature 'switch';
 
 our %modules;
 our %rm_mod;
@@ -16,8 +18,40 @@ our %config;
 %config = &configParse("bot.conf");
 &validate(\%config);
 
+our $socket = IO::Socket::INET->new(
+	PeerAddr => $config{'server'},
+	PeerPort => $config{'port'},
+	Proto 	 => 'tcp'
+) or die "$!\n";
 
+&raw("NICK ".$config{'nickname'});
+&raw("USER ".$config{'username'}." * * :".$config{'realname'});
 
+while(<$socket>) {
+	my(@data) = split (/ /,$_);
+	given(@data[0]) {
+		when("PING") {
+			&raw("PONG ".$data[1]);
+		}
+	}
+	given(@data[1]) {
+		when("396") {
+			&raw("JOIN ".$config{'autojoin'})
+		}
+	}
+	print $_;
+}
+sub chanMsg {
+	my($chan, @args) = (shift, @_);
+	$_msg = join (' ', @_);
+	if($socket) {
+		&raw("PRIVMSG $chan :$_msg");
+	}
+}
+sub raw {
+	my ($cmd) = shift;
+	print $socket "$cmd\n" if $socket;
+}
 sub configParse {
 	my($config, $readarg, @args) = ($_[0], "<", @_);
 	open(CONFIG, $readarg, $config) or die "$!\n";
@@ -43,7 +77,7 @@ sub validate {
 	if( ! $config{'nickname'} ){ print "&core::validate => Nickname Not defined in configuration"; $err = 1; }
 	if( ! $config{'username'} ){ print "&core::validate => Username Not defined in configuration"; $err = 1; }
 	if( ! $config{'realname'} ){ print "&core::validate => Realname Not defined in configuration"; $err = 1; }
-	if( ! $config{'autojoin'} ){ print "&core::validate => Server Not defined in configuration"; $err = 1; }
+	if( ! $config{'autojoin'} ){ print "&core::validate => AutoJoin Not defined in configuration"; $err = 1; }
 	if($err) {
 		print "\n\nexiting...\n";
 		exit(0);
