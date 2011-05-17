@@ -8,11 +8,13 @@ package example;
 &modAPI::reg_delete(\&on_delete); 
 
 sub on_register {
-
+	print $core::socket "PRIVMSG #ICHAT :I HAVE BEEN EXECUTED....\n";
+	$commands{"foo"} = sub {
+		print "COCKSUCKER";
+	},
 }
 
 sub on_delete {
-
+	&modAPI::unload;
 }
-
 1
