@@ -11,7 +11,6 @@ sub register {
 	my $mod = caller(0);
 	$core::modules{$mod} = $_[0] if $_[0];
 	$core::modules{$mod}() if $core::modules{$mod};
-	
 }
 sub reg_delete {
 	my $mod = caller(0);
