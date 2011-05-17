@@ -38,18 +38,12 @@ sub configParse {
 
 sub validate {
 	my($err) = (0);
-	if( ! $config{'server'} ){ print "&core::validate => Server Not 
-defined in configuration"; $err = 1; }
-	if( ! $config{'port'} ){ print "&core::validate => Port Not 
-defined in configuration"; $err = 1; }
-	if( ! $config{'nickname'} ){ print "&core::validate => Nickname 
-Not defined in configuration"; $err = 1; }
-	if( ! $config{'username'} ){ print "&core::validate => Username 
-Not defined in configuration"; $err = 1; }
-	if( ! $config{'realname'} ){ print "&core::validate => Realname 
-Not defined in configuration"; $err = 1; }
-	if( ! $config{'autojoin'} ){ print "&core::validate => Server 
-Not defined in configuration"; $err = 1; }
+	if( ! $config{'server'} ){ print "&core::validate => Server Not defined in configuration"; $err = 1; }
+	if( ! $config{'port'} ){ print "&core::validate => Port Not defined in configuration"; $err = 1; }
+	if( ! $config{'nickname'} ){ print "&core::validate => Nickname Not defined in configuration"; $err = 1; }
+	if( ! $config{'username'} ){ print "&core::validate => Username Not defined in configuration"; $err = 1; }
+	if( ! $config{'realname'} ){ print "&core::validate => Realname Not defined in configuration"; $err = 1; }
+	if( ! $config{'autojoin'} ){ print "&core::validate => Server Not defined in configuration"; $err = 1; }
 	if($err) {
 		print "\n\nexiting...\n";
 		exit(0);
